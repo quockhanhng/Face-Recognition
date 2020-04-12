@@ -3,11 +3,23 @@
   <component name="ChangeListManager">
     <list default="true" id="20dff8b7-c66c-4438-b12f-70ea15ff7b5b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/LICENSE-3RD-PARTY.txt" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/LICENSE-3RD-PARTY.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/LICENSE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/LICENSE.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/cv2.cp38-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/cv2/cv2.cp38-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/easy-install.pth" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/easy-install.pth" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -30,7 +42,28 @@
       <recent name="C:\Users\ADMIN\PycharmProjects\Face Recognition" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.Trainer">
+    <configuration name="DataSetCreator (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Face Recognition" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DataSetCreator.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="DataSetCreator" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Face Recognition" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -52,8 +85,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Trainer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Face Recognition" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Trainer.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Trainer" />
+        <item itemvalue="Python.DataSetCreator (1)" />
         <item itemvalue="Python.DataSetCreator" />
       </list>
     </recent_temporary>
@@ -72,21 +128,29 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1815" height="295" key="GridCell.Tab.0.bottom" timestamp="1586633020896">
+    <state x="969" y="198" key="#Inspections" timestamp="1586634197233">
       <screen x="0" y="0" width="1836" height="1080" />
     </state>
-    <state width="1815" height="295" key="GridCell.Tab.0.bottom/0.0.1836.1080@0.0.1836.1080" timestamp="1586633020896" />
-    <state width="1815" height="295" key="GridCell.Tab.0.center" timestamp="1586633020896">
+    <state x="969" y="198" key="#Inspections/0.0.1836.1080@0.0.1836.1080" timestamp="1586634197233" />
+    <state x="1096" y="166" key="#Trainer" timestamp="1586696711007">
       <screen x="0" y="0" width="1836" height="1080" />
     </state>
-    <state width="1815" height="295" key="GridCell.Tab.0.center/0.0.1836.1080@0.0.1836.1080" timestamp="1586633020896" />
-    <state width="1815" height="295" key="GridCell.Tab.0.left" timestamp="1586633020880">
+    <state x="1096" y="166" key="#Trainer/0.0.1836.1080@0.0.1836.1080" timestamp="1586696711007" />
+    <state width="896" height="289" key="GridCell.Tab.0.bottom" timestamp="1586696712752">
       <screen x="0" y="0" width="1836" height="1080" />
     </state>
-    <state width="1815" height="295" key="GridCell.Tab.0.left/0.0.1836.1080@0.0.1836.1080" timestamp="1586633020880" />
-    <state width="1815" height="295" key="GridCell.Tab.0.right" timestamp="1586633020896">
+    <state width="896" height="289" key="GridCell.Tab.0.bottom/0.0.1836.1080@0.0.1836.1080" timestamp="1586696712752" />
+    <state width="896" height="289" key="GridCell.Tab.0.center" timestamp="1586696712751">
       <screen x="0" y="0" width="1836" height="1080" />
     </state>
-    <state width="1815" height="295" key="GridCell.Tab.0.right/0.0.1836.1080@0.0.1836.1080" timestamp="1586633020896" />
+    <state width="896" height="289" key="GridCell.Tab.0.center/0.0.1836.1080@0.0.1836.1080" timestamp="1586696712751" />
+    <state width="896" height="289" key="GridCell.Tab.0.left" timestamp="1586696712751">
+      <screen x="0" y="0" width="1836" height="1080" />
+    </state>
+    <state width="896" height="289" key="GridCell.Tab.0.left/0.0.1836.1080@0.0.1836.1080" timestamp="1586696712751" />
+    <state width="896" height="289" key="GridCell.Tab.0.right" timestamp="1586696712752">
+      <screen x="0" y="0" width="1836" height="1080" />
+    </state>
+    <state width="896" height="289" key="GridCell.Tab.0.right/0.0.1836.1080@0.0.1836.1080" timestamp="1586696712752" />
   </component>
 </project>
