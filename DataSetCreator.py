@@ -1,10 +1,34 @@
 import cv2
+import sqlite3
 from pip._vendor.distlib.compat import raw_input
 
 faceDetect = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
-inputId = raw_input("Enter user id: ")
+
+def insertOrUpdate(student_id, student_name, student_class, student_gender):
+    conn = sqlite3.connect("StudentDatabase.db")
+    commandString = "SELECT * FROM Student WHERE ID = " + str(student_id)
+    cursor = conn.execute(commandString)
+    isRecordExist = 0
+    for row in cursor:
+        isRecordExist = 1
+    if isRecordExist == 1:
+        commandString = "UPDATE Student SET Name = " + str(student_name) + ", Class =" + \
+                        str(student_class) + ", Gender = " + str(student_gender) + " WHERE ID = " + str(student_id)
+    else:
+        commandString = "INSERT INTO Student(ID,Name,Class,Gender) VALUES(" + str(student_id) + ", " + \
+                        str(student_name) + ", " + str(student_class) + "," + str(student_gender) + ")"
+    conn.execute(commandString)
+    conn.commit()
+    conn.close()
+
+
+inputId = raw_input("Enter student's id: ")
+inputName = raw_input("Enter name: ")
+inputClass = raw_input("Enter class: ")
+inputGender = raw_input("Enter gender: ")
+insertOrUpdate(inputId, inputName, inputClass, inputGender)
 sampleNum = 0
 while True:
     ret, img = cam.read()
