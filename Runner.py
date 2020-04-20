@@ -22,7 +22,8 @@ def mainMenu():
                 TrainImages()
                 break
             elif choice == 3:
-                RecognizeFaces()
+                class_id = str(input("Enter Class ID: "))
+                RecognizeFaces(class_id)
                 break
             elif choice == 4:
                 SendMail()
@@ -46,12 +47,19 @@ def CaptureFaces():
 
 
 def TrainImages():
-    os.system("py Trainer.py")
+    # extract embedding
+    command = "python extract_embeddings.py --dataset dataset --embeddings output/embeddings.pickle --detector face_detection_model --embedding-model openface_nn4.small2.v1.t7"
+    os.system(command)
+
+    # train model
+    command = "python train_model.py --embeddings output/embeddings.pickle --recognizer output/recognizer.pickle --le output/le.pickle"
+    os.system(command)
     mainMenu()
 
 
-def RecognizeFaces():
-    os.system("py FaceDetection.py")
+def RecognizeFaces(class_id):
+    command = "python recognize.py --detector face_detection_model --embedding-model openface_nn4.small2.v1.t7 --recognizer output/recognizer.pickle --le output/le.pickle --class_id " + class_id
+    os.system(command)
     mainMenu()
 
 
