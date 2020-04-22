@@ -5,7 +5,7 @@ def mainMenu():
     os.system('cls')
     print()
     print(10 * "*", "WELCOME MENU", 10 * "*")
-    print("[1] Add or update student")
+    print("[1] Add or update student's face data")
     print("[2] Train Images")
     print("[3] Recognize & Attendance")
     print("[4] Auto Mail")
@@ -16,7 +16,8 @@ def mainMenu():
             choice = int(input("Enter Choice: "))
 
             if choice == 1:
-                CaptureFaces()
+                student_id = str(input("Enter Student ID: "))
+                AddFaceData(student_id1)
                 break
             elif choice == 2:
                 TrainImages()
@@ -41,8 +42,9 @@ def mainMenu():
 
 # ---------------------------------------------------------
 
-def CaptureFaces():
-    os.system("py DataSetCreator.py")
+def AddFaceData(student_id):
+    command = "py add_face_data.py --detector face_detection_model --student_id " + student_id
+    os.system(command)
     mainMenu()
 
 
