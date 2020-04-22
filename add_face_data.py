@@ -13,7 +13,7 @@ ap.add_argument("-c", "--confidence", type=float, default=0.5, help="minimum pro
 ap.add_argument("-i", "--student_id", required=True, help="determine student's id")
 args = vars(ap.parse_args())
 
-print("[INFO] loading face detector...")
+print("[LOG] Loading face detector")
 protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
 modelPath = os.path.sep.join([args["detector"], "res10_300x300_ssd_iter_140000.caffemodel"])
 detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
@@ -24,13 +24,13 @@ if not os.path.isdir(dataPath):
     os.makedirs(dataPath)
 sampleNum = 0
 
-# initialize the video stream, then allow the camera sensor to warm up
-print("[INFO] starting video stream...")
+print("[LOG] starting video stream")
 vs = VideoStream(src=0).start()
 time.sleep(1.0)
 
 while True:
     frame = vs.read()
+    savedFrame = frame
     frame = imutils.resize(frame, width=600)
     (h, w) = frame.shape[:2]
 
@@ -56,13 +56,13 @@ while True:
 
             sampleNum += 1
 
-            cv2.imwrite(dataPath + "/" + inputId + "." + str(sampleNum) + ".jpg", face)
+            cv2.imwrite(dataPath + "/" + inputId + "_" + str(sampleNum) + ".jpg", savedFrame)
             cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 0, 255), 2)
             cv2.waitKey(100)
 
     cv2.imshow("Adding new face data", frame)
     cv2.waitKey(1)
-    if sampleNum >= 30:
+    if sampleNum >= 25:
         break
 
 cv2.destroyAllWindows()

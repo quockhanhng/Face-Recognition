@@ -4,7 +4,7 @@ import os
 def mainMenu():
     os.system('cls')
     print()
-    print(10 * "*", "WELCOME MENU", 10 * "*")
+    print(10 * "*", "Student Attendance Management System", 10 * "*")
     print("[1] Add or update student's face data")
     print("[2] Train Images")
     print("[3] Recognize & Attendance")
@@ -17,7 +17,7 @@ def mainMenu():
 
             if choice == 1:
                 student_id = str(input("Enter Student ID: "))
-                AddFaceData(student_id1)
+                AddFaceData(student_id)
                 break
             elif choice == 2:
                 TrainImages()
@@ -49,11 +49,11 @@ def AddFaceData(student_id):
 
 
 def TrainImages():
-    # extract embedding
+    # Extract embedding
     command = "python extract_embeddings.py --dataset dataset --embeddings output/embeddings.pickle --detector face_detection_model --embedding-model openface_nn4.small2.v1.t7"
     os.system(command)
 
-    # train model
+    # Train model
     command = "python train_model.py --embeddings output/embeddings.pickle --recognizer output/recognizer.pickle --le output/le.pickle"
     os.system(command)
     mainMenu()

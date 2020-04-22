@@ -2,11 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="20dff8b7-c66c-4438-b12f-70ea15ff7b5b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/add_face_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Face Recognition.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Face Recognition.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DataSetCreator.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/Runner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/add_face_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/add_face_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extract_embeddings.py" beforeDir="false" afterPath="$PROJECT_DIR$/extract_embeddings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/haarcascade_frontalface_default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/embeddings.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/output/embeddings.pickle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/le.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/output/le.pickle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/recognizer.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/output/recognizer.pickle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/recognize.py" beforeDir="false" afterPath="$PROJECT_DIR$/recognize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,13 +43,14 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/AppData/Local/Programs/Python/Python38" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/dataSet/khanh" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\ADMIN\PycharmProjects\Face Recognition" />
+      <recent name="C:\Users\ADMIN\PycharmProjects\Face Recognition\dataSet\khanh" />
       <recent name="C:\Users\ADMIN\PycharmProjects\Face Recognition\dataSet" />
+      <recent name="C:\Users\ADMIN\PycharmProjects\Face Recognition" />
     </key>
   </component>
   <component name="RunManager" selected="Python.Runner">
@@ -188,10 +195,10 @@
       <screen x="0" y="0" width="1836" height="1080" />
     </state>
     <state x="1096" y="166" key="#Trainer/0.0.1836.1080@0.0.1836.1080" timestamp="1586696711007" />
-    <state x="651" y="330" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1587221553186">
+    <state x="651" y="330" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1587542574644">
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
-    <state x="651" y="330" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1838.1080@0.0.1838.1080" timestamp="1587221553186" />
+    <state x="651" y="330" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1838.1080@0.0.1838.1080" timestamp="1587542574644" />
     <state x="769" y="420" key="DBNavigator.ConnectionAuthenticationDialog" timestamp="1587497555598">
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
@@ -204,26 +211,26 @@
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
     <state x="698" y="294" key="FileChooserDialogImpl/0.0.1838.1080@0.0.1838.1080" timestamp="1587521332375" />
-    <state width="1795" height="193" key="GridCell.Tab.0.bottom" timestamp="1587541321471">
+    <state width="1795" height="193" key="GridCell.Tab.0.bottom" timestamp="1587546651048">
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
     <state width="1815" height="286" key="GridCell.Tab.0.bottom/0.0.1836.1080@0.0.1836.1080" timestamp="1586754774448" />
-    <state width="1795" height="193" key="GridCell.Tab.0.bottom/0.0.1838.1080@0.0.1838.1080" timestamp="1587541321471" />
-    <state width="1795" height="193" key="GridCell.Tab.0.center" timestamp="1587541321471">
+    <state width="1795" height="193" key="GridCell.Tab.0.bottom/0.0.1838.1080@0.0.1838.1080" timestamp="1587546651048" />
+    <state width="1795" height="193" key="GridCell.Tab.0.center" timestamp="1587546651048">
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
     <state width="1815" height="286" key="GridCell.Tab.0.center/0.0.1836.1080@0.0.1836.1080" timestamp="1586754774447" />
-    <state width="1795" height="193" key="GridCell.Tab.0.center/0.0.1838.1080@0.0.1838.1080" timestamp="1587541321471" />
-    <state width="1795" height="193" key="GridCell.Tab.0.left" timestamp="1587541321471">
+    <state width="1795" height="193" key="GridCell.Tab.0.center/0.0.1838.1080@0.0.1838.1080" timestamp="1587546651048" />
+    <state width="1795" height="193" key="GridCell.Tab.0.left" timestamp="1587546651048">
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
     <state width="1815" height="286" key="GridCell.Tab.0.left/0.0.1836.1080@0.0.1836.1080" timestamp="1586754774447" />
-    <state width="1795" height="193" key="GridCell.Tab.0.left/0.0.1838.1080@0.0.1838.1080" timestamp="1587541321471" />
-    <state width="1795" height="193" key="GridCell.Tab.0.right" timestamp="1587541321471">
+    <state width="1795" height="193" key="GridCell.Tab.0.left/0.0.1838.1080@0.0.1838.1080" timestamp="1587546651048" />
+    <state width="1795" height="193" key="GridCell.Tab.0.right" timestamp="1587546651048">
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
     <state width="1815" height="286" key="GridCell.Tab.0.right/0.0.1836.1080@0.0.1836.1080" timestamp="1586754774448" />
-    <state width="1795" height="193" key="GridCell.Tab.0.right/0.0.1838.1080@0.0.1838.1080" timestamp="1587541321471" />
+    <state width="1795" height="193" key="GridCell.Tab.0.right/0.0.1838.1080@0.0.1838.1080" timestamp="1587546651048" />
     <state width="1795" height="342" key="GridCell.Tab.1.bottom" timestamp="1587539982600">
       <screen x="0" y="0" width="1838" height="1080" />
     </state>
