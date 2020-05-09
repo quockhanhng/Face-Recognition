@@ -6,13 +6,16 @@ import pickle
 import time
 import cv2
 import os
+import mysql.connector
+from datetime import datetime
+import pandas as pd
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--detector", required=True, help="path to OpenCV's deep learning face detector")
 ap.add_argument("-m", "--embedding-model", required=True, help="path to OpenCV's deep learning face embedding model")
-ap.add_argument("-r", "--recognizer", required=True, help="path to modxel trained to recognize faces")
+ap.add_argument("-r", "--recognizer", required=True, help="path to model trained to recognize faces")
 ap.add_argument("-l", "--le", required=True, help="path to label encoder")
-ap.add_argument("-c", "--confidence", type=float, default=0.5, help="minimum probability to filter weak detections")
+ap.add_argument("-c", "--confidence", type=float, default=0.8, help="minimum probability to filter weak detections")
 ap.add_argument("-i", "--class_id", required=True, help="determine which class need to check in")
 args = vars(ap.parse_args())
 
@@ -28,7 +31,128 @@ embedder = cv2.dnn.readNetFromTorch(args["embedding_model"])
 recognizer = pickle.loads(open(args["recognizer"], "rb").read())
 le = pickle.loads(open(args["le"], "rb").read())
 
-class_id = args["class_id"]
+col_names = ['Student_Id', 'Subject_Id', 'Date_Time']
+attendance = pd.DataFrame(columns=col_names)
+
+
+# get list of student from class with subject's id
+
+
+def getStudentsFromClass(class_id):
+    my_db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="ThisIsPassword",
+        database="face_recognition"
+    )
+    my_cursor = my_db.cursor()
+    query = """
+            SELECT DISTINCT u.code
+            FROM users as u
+            INNER JOIN user_subject as us
+            ON u.id = us.user_id 
+            INNER JOIN subjects as s
+            ON us.subject_id = s.id WHERE s.code = '{}'
+            AND u.role = 2""".format(class_id)
+
+    my_cursor.execute(query)
+    my_result = [item[0] for item in my_cursor.fetchall()]
+    my_cursor.close()
+
+    return my_result
+
+
+def checkInStudent(s_code, s_id, c_id, attendance_time):
+    my_db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="ThisIsPassword",
+        database="face_recognition"
+    )
+    query = """
+            INSERT INTO recognitions (user_id, subject_id, created_at, updated_at) 
+            VALUES ('{}', '{}', '{}', '{}')
+            """.format(s_id, c_id, attendance_time, attendance_time)
+    my_cursor = my_db.cursor()
+    my_cursor.execute(query)
+    my_db.commit()
+    print("[LOG] Check in student {} successful".format(s_code))
+    my_cursor.close()
+
+
+def getStudentIdFromCode(code):
+    my_db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="ThisIsPassword",
+        database="face_recognition"
+    )
+    my_cursor = my_db.cursor()
+    query = """
+            SELECT u.id
+            FROM users as u
+            WHERE u.code = '{}'""".format(code)
+
+    my_cursor.execute(query)
+    my_result = [item[0] for item in my_cursor.fetchall()]
+    my_cursor.close()
+
+    return my_result[0]
+
+
+def getSubjectIdFromCode(code):
+    my_db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="ThisIsPassword",
+        database="face_recognition"
+    )
+    my_cursor = my_db.cursor()
+    query = """
+            SELECT s.id
+            FROM subjects as s
+            WHERE s.code = '{}'""".format(code)
+
+    my_cursor.execute(query)
+    my_result = [item[0] for item in my_cursor.fetchall()]
+    my_cursor.close()
+
+    return my_result[0]
+
+
+def getEmailFromStudentId(code):
+    my_db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="ThisIsPassword",
+        database="face_recognition"
+    )
+    my_cursor = my_db.cursor()
+    query = """
+                SELECT u.email
+                FROM users as u
+                WHERE u.code = '{}'""".format(code)
+
+    my_cursor.execute(query)
+    my_result = [item[0] for item in my_cursor.fetchall()]
+    my_cursor.close()
+
+    return my_result[0]
+
+
+def sendMail(receiver, body):
+    command = "python send_mail.py --receive \"{}\" --body \"{}\"".format(receiver, body)
+    os.system(command)
+
+
+def sendMailWithAttachment(receiver, body, file):
+    command = "python send_mail.py --receive \"{}\" --body \"{}\" --file \"{}\"".format(receiver, body, file)
+    os.system(command)
+
+
+subject_code = str(args["class_id"])
+student_list = getStudentsFromClass(subject_code)
+student_check_in_list = {i: False for i in student_list}
 
 print("[LOG] starting video stream")
 vs = VideoStream(src=0).start()
@@ -75,10 +199,25 @@ while True:
             preds = recognizer.predict_proba(vec)[0]
             j = np.argmax(preds)
             proba = preds[j]
-            name = le.classes_[j]
+            student_code = le.classes_[j]
+
+            # Check if student is in class
+            # text = "{}: {:.2f}%".format(student_code, proba * 100)
+            text = "Not in this class"
+            if student_code in student_list and proba > 0.65:
+                text = "{}: {:.2f}%".format(student_code, proba * 100)
+                if not student_check_in_list[student_code]:
+                    student_check_in_list[student_code] = True
+                    student_id = getStudentIdFromCode(student_code)
+                    subject_id = getSubjectIdFromCode(subject_code)
+
+                    now = datetime.now()
+                    current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+
+                    checkInStudent(student_code, student_id, subject_id, current_time)
+                    attendance.loc[len(attendance)] = [student_id, subject_id, current_time]
 
             # Draw the bounding box and probability of the face
-            text = "{}: {:.2f}%".format(name, proba * 100)
             y = startY - 10 if startY - 10 > 10 else startY + 10
             cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 0, 255), 2)
             cv2.putText(frame, text, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
@@ -88,6 +227,21 @@ while True:
 
     if key == ord("q"):  # Stop when press 'Q'
         break
+
+# Write attendance log for this lesson
+now = datetime.now()
+current_time = now.strftime("%Y-%m-%d_%H-%M-%S")
+
+fileName = "C:\\Users\\ADMIN\\PycharmProjects\\Face Recognition\\attendance"
+fileName = fileName + os.sep + "Attendance_" + current_time + ".csv"
+attendance.to_csv(fileName, index=False)
+
+# Send warning mail to absent students
+for student_code in student_check_in_list:
+    if not student_check_in_list[student_code]:
+        sendMailWithAttachment(getEmailFromStudentId(student_code),
+                               "Bạn đã vắng mặt ở tiết học {}".format(subject_code),
+                               fileName)
 
 cv2.destroyAllWindows()
 vs.stop()

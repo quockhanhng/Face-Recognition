@@ -65,9 +65,4 @@ def RecognizeFaces(class_id):
     mainMenu()
 
 
-def SendMail():
-    # Send mail
-    mainMenu()
-
-
 mainMenu()
