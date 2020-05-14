@@ -22,7 +22,7 @@ class App:
         self.window.title(window_title)
         self.video_source = video_source
         self.window.resizable(False, False)
-        self.window.geometry("+500+250")
+        self.window.geometry("1000x490+450+250")
 
         self.is_recognize = False
         self.subject_code = ""
@@ -73,52 +73,88 @@ class App:
         self.m2.add(self.log_text)
         # Stop button
         self.btn_stop = \
-            tkinter.Button(self.m2, text="STOP", width=50, borderwidth=2,
+            tkinter.Button(self.m2, text="STOP", width=48, borderwidth=2,
                            font='Monospaced 10 bold', command=self.onStop)
         self.btn_stop.config(height=3)
         self.m2.add(self.btn_stop)
+
+        self.checked_students = {}
+
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
         self.update()
         self.window.mainloop()
 
     def onStart(self):
-        if checkClassIfExits(self.entry_class_code.get()):
-            self.is_recognize = True
+        if not self.is_recognize:
+
+            if checkClassIfExits(self.entry_class_code.get()):
+                self.is_recognize = True
+
+                self.lb_student_code['text'] = ""
+                self.lb_student_code.config(background='#446dc7', height=3)
+
+                code = self.entry_class_code.get()
+                self.subject_code = code
+
+                self.log_text.insert(tkinter.INSERT, "[LOG] Start check-in students in class {}\n".format(code))
+
+                self.student_list = getStudentsFromClass(code)
+                self.student_check_in_list = {i: False for i in self.student_list}
+
+                # Setup checkboxes to check in students
+                self.checkboxes_panel = VerticalScrolledFrame(self.m)
+                self.checkboxes_list = dict()
+                for s_id in self.student_list:
+                    self.addCheckbox(s_id)
+
+                self.m.add(self.checkboxes_panel)
+                self.window.geometry("1200x490+450+250")
+
+            else:
+                self.lb_student_code['text'] = "Could not find class"
+                self.lb_student_code.config(background='#EB3912', height=3)
+
+        else:
+            self.log_text.insert(tkinter.INSERT, "[LOG] Finish this session first in order to start another session\n")
+
+    def onStop(self):
+        if self.is_recognize:
+            self.is_recognize = False
+
+            self.log_text.insert(tkinter.INSERT, "[LOG] Finished check-in\n")
 
             self.lb_student_code['text'] = ""
             self.lb_student_code.config(background='#446dc7', height=3)
+            self.entry_class_code.delete(0, 'end')
 
-            code = self.entry_class_code.get()
-            self.subject_code = code
+            self.window.geometry("1000x490+450+250")
+            self.checkboxes_panel.destroy()
 
-            self.log_text.insert(tkinter.INSERT, "[LOG] Start check-in students in class {}\n".format(code))
+            now = datetime.now()
+            current_time = now.strftime("%Y-%m-%d_%H-%M-%S")
 
-            self.student_list = getStudentsFromClass(code)
-            self.student_check_in_list = {i: False for i in self.student_list}
+            # Actually check-in student in database
+            for code in self.checked_students:
+                student_id = getStudentIdFromCode(code)
+                subject_id = getSubjectIdFromCode(self.subject_code)
+                self.attendance.loc[len(self.attendance)] = [student_id, subject_id, current_time]
+                checkInStudent(student_id, subject_id, current_time)
+
+            # Write attendance log for this lesson
+            fileName = "C:\\Users\\ADMIN\\PycharmProjects\\Face Recognition\\attendance"
+            fileName = fileName + os.sep + "Attendance_" + current_time + ".csv"
+            self.attendance.to_csv(fileName, index=False)
+            self.log_text.insert(tkinter.INSERT, "[LOG] Wrote log for this lesson to file successful\n")
+
+            # Send warning mail to absent students
+            # for student_code in self.student_check_in_list:
+            #     if not self.student_check_in_list[student_code]:
+            #         sendMailWithAttachment(getEmailFromStudentId(student_code),
+            #                                "Bạn đã vắng mặt ở tiết học {}".format(self.subject_code), fileName)
+
         else:
-            self.lb_student_code['text'] = "Could not find class"
-            self.lb_student_code.config(background='#EB3912', height=3)
-
-    def onStop(self):
-        self.is_recognize = False
-
-        self.log_text.insert(tkinter.INSERT, "[LOG] Finished check-in\n")
-
-        self.lb_student_code['text'] = ""
-        self.lb_student_code.config(background='#446dc7', height=3)
-        self.entry_class_code.delete(0, 'end')
-
-        # Write attendance log for this lesson
-        now = datetime.now()
-        current_time = now.strftime("%Y-%m-%d_%H-%M-%S")
-
-        fileName = "C:\\Users\\ADMIN\\PycharmProjects\\Face Recognition\\attendance"
-        fileName = fileName + os.sep + "Attendance_" + current_time + ".csv"
-        self.attendance.to_csv(fileName, index=False)
-        self.log_text.insert(tkinter.INSERT, "[LOG] Wrote log for this lesson to file successful\n")
-
-        self.sendWaringMail()
+            self.log_text.insert(tkinter.INSERT, "[LOG] The attendance system is not start yet\n")
 
     def update(self):
         # Get a frame from the video source
@@ -214,19 +250,18 @@ class App:
                         text = "{}: {:.2f}%".format(student_code, proba * 100)
                         if not self.student_check_in_list[student_code]:
                             self.student_check_in_list[student_code] = True
-                            student_id = getStudentIdFromCode(student_code)
-                            subject_id = getSubjectIdFromCode(self.subject_code)
 
                             now = datetime.now()
                             current_time = now.strftime("%Y-%m-%d %H:%M:%S")
 
-                            checkInStudent(student_code, student_id, subject_id, current_time)
+                            # Add student to checked list
+                            self.checked_students['{}'.format(student_code)] = current_time
+                            self.checkboxes_list[student_code].var.set(1)
 
                             log_text = "Check in student {} successful".format(student_code)
                             self.lb_student_code['text'] = log_text
-                            self.log_text.insert(tkinter.INSERT, "[LOG] " + log_text + "\n")
                             self.lb_student_code.config(background='#4cc845', height=3)
-                            self.attendance.loc[len(self.attendance)] = [student_id, subject_id, current_time]
+                            self.log_text.insert(tkinter.INSERT, "[LOG] " + log_text + "\n")
 
                     # Draw the bounding box and probability of the face
                     y = startY - 10 if startY - 10 > 10 else startY + 10
@@ -241,12 +276,30 @@ class App:
         else:
             self.window.after(self.delay, self.update)
 
-    def sendWaringMail(self):
-        # Send warning mail to absent students
-        for student_code in self.student_check_in_list:
-            if not self.student_check_in_list[student_code]:
-                sendMailWithAttachment(getEmailFromStudentId(student_code),
-                                       "Bạn đã vắng mặt ở tiết học {}".format(self.subject_code), fileName)
+    def addCheckbox(self, s_id):
+        self.checkboxes_list[s_id] = tkinter.Checkbutton(self.checkboxes_panel.interior, text=s_id)
+        self.checkboxes_list[s_id].var = tkinter.IntVar()
+        self.checkboxes_list[s_id]['variable'] = self.checkboxes_list[s_id].var
+        self.checkboxes_list[s_id]['command'] = lambda w=self.checkboxes_list[s_id]: self.upon_select(w)
+        self.checkboxes_list[s_id].pack(padx=10, pady=5, side=tkinter.TOP)
+
+    def upon_select(self, widget):
+        if widget.var.get() == 0:  # Lecturer uncheck student
+            self.student_check_in_list[widget['text']] = False
+            log_text = "Unchecked student {}".format(widget['text'])
+            self.lb_student_code['text'] = log_text
+            self.lb_student_code.config(background='#BB0A1E', height=3)
+            self.log_text.insert(tkinter.INSERT, "[LOG] " + log_text + "\n")
+            self.checked_students.pop(widget['text'])
+        else:  # Lecturer check student manually
+            self.student_check_in_list[widget['text']] = True
+            log_text = "Check in student {} successful".format(widget['text'])
+            self.lb_student_code['text'] = log_text
+            self.lb_student_code.config(background='#4cc845', height=3)
+            self.log_text.insert(tkinter.INSERT, "[LOG] " + log_text + "\n")
+            now = datetime.now()
+            current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            self.checked_students['{}'.format(widget['text'])] = current_time
 
 
 class MyVideoCapture:
@@ -275,6 +328,47 @@ class MyVideoCapture:
     def __del__(self):
         if self.vid.isOpened():
             self.vid.release()
+
+
+class VerticalScrolledFrame(tkinter.Frame):
+    def __init__(self, parent, *args, **kw):
+        tkinter.Frame.__init__(self, parent, *args, **kw)
+
+        # create a canvas object and a vertical scrollbar for scrolling it
+        v_scrollbar = tkinter.Scrollbar(self, orient=tkinter.VERTICAL)
+        v_scrollbar.pack(fill=tkinter.Y, side=tkinter.RIGHT, expand=tkinter.FALSE)
+        canvas = tkinter.Canvas(self, bd=0, highlightthickness=0,
+                                yscrollcommand=v_scrollbar.set)
+        canvas.pack(side=tkinter.LEFT, fill=tkinter.BOTH, expand=tkinter.TRUE)
+        v_scrollbar.config(command=canvas.yview)
+
+        # reset the view
+        canvas.xview_moveto(0)
+        canvas.yview_moveto(0)
+
+        # create a frame inside the canvas which will be scrolled with it
+        self.interior = interior = tkinter.Frame(canvas)
+        interior_id = canvas.create_window(0, 0, window=interior,
+                                           anchor=tkinter.NW)
+
+        # track changes to the canvas and frame width and sync them,
+        # also updating the scrollbar
+        def _configure_interior(event):
+            # update the scrollbars to match the size of the inner frame
+            size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
+            canvas.config(scrollregion="0 0 %s %s" % size)
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the canvas's width to fit the inner frame
+                canvas.config(width=interior.winfo_reqwidth())
+
+        interior.bind('<Configure>', _configure_interior)
+
+        def _configure_canvas(event):
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # update the inner frame's width to fill the canvas
+                canvas.itemconfigure(interior_id, width=canvas.winfo_width())
+
+        canvas.bind('<Configure>', _configure_canvas)
 
 
 # Loading Face Detector
@@ -334,7 +428,7 @@ def getStudentsFromClass(class_id):
     return my_result
 
 
-def checkInStudent(s_code, s_id, c_id, attendance_time):
+def checkInStudent(s_id, c_id, attendance_time):
     my_db = mysql.connector.connect(
         host="localhost",
         user="root",
