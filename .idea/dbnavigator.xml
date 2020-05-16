@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DBNavigator.Project.DataEditorManager">
     <record-view-column-sorting-type value="BY_INDEX" />
-    <value-preview-text-wrapping value="true" />
+    <value-preview-text-wrapping value="false" />
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DataExportManager">
@@ -22,19 +22,31 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
-    <loaded-nodes />
+    <show-object-properties value="false" />
+    <loaded-nodes>
+      <connection connection-id="212d87a0-955d-4202-86a1-b1b9171ffb51">
+        <schema name="face_recognition" object-types="table, function, dataset trigger, constraint, procedure, index, view, column" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="d06ef7c3-ed15-4cdc-9608-6d58719963a0">
-      <console name="studentdatabase" type="STANDARD" schema="studentdatabase" session="Main" />
+    <connection id="212d87a0-955d-4202-86a1-b1b9171ffb51">
+      <console name="face_recognition" type="STANDARD" schema="face_recognition" session="Main"><![CDATA[SELECT COUNT(u.id)
+FROM users as u
+WHERE u.code = 'a'
+AND u.role = 2]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="d06ef7c3-ed15-4cdc-9608-6d58719963a0" />
+    <connection id="212d87a0-955d-4202-86a1-b1b9171ffb51" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="212d87a0-955d-4202-86a1-b1b9171ffb51" dataset="face_recognition.user_subject" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="212d87a0-955d-4202-86a1-b1b9171ffb51" dataset="face_recognition.users" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="212d87a0-955d-4202-86a1-b1b9171ffb51" dataset="face_recognition.subjects" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
@@ -59,9 +71,9 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="d06ef7c3-ed15-4cdc-9608-6d58719963a0" active="true">
+      <connection id="212d87a0-955d-4202-86a1-b1b9171ffb51" active="true">
         <database>
-          <name value="studentdatabase" />
+          <name value="face_recognition" />
           <description value="" />
           <database-type value="MYSQL" />
           <config-type value="BASIC" />
@@ -72,10 +84,10 @@
           <url-type value="DATABASE" />
           <host value="localhost" />
           <port value="3306" />
-          <database value="StudentDatabase" />
+          <database value="mysql" />
           <type value="USER_PASSWORD" />
           <user value="root" />
-          <deprecated-pwd value="QXZhZGFrZWRhdnI0IQ==" />
+          <deprecated-pwd value="VGhpc0lzUGFzc3dvcmQ=" />
         </database>
         <properties>
           <auto-commit value="false" />

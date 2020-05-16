@@ -1,4 +1,8 @@
 import os
+import add_face_data
+import extract_embeddings
+import train_model
+import recognize_ui
 
 
 def mainMenu():
@@ -8,7 +12,6 @@ def mainMenu():
     print("[1] Add or update student's face data")
     print("[2] Train Images")
     print("[3] Recognize & Attendance")
-    print("[4] Auto Mail")
     print("[0] Quit")
 
     while True:
@@ -25,9 +28,7 @@ def mainMenu():
             elif choice == 3:
                 class_id = str(input("Enter Class ID: "))
                 RecognizeFaces(class_id)
-                break
-            elif choice == 4:
-                SendMail()
+                # RecognizeUI()
                 break
             elif choice == 0:
                 print("Thank You")
@@ -43,25 +44,27 @@ def mainMenu():
 # ---------------------------------------------------------
 
 def AddFaceData(student_id):
-    command = "py add_face_data.py --detector face_detection_model --student_id " + student_id
-    os.system(command)
+    add_face_data.run(student_id)
     mainMenu()
 
 
 def TrainImages():
     # Extract embedding
-    command = "python extract_embeddings.py --dataset dataset --embeddings output/embeddings.pickle --detector face_detection_model --embedding-model openface_nn4.small2.v1.t7"
-    os.system(command)
+    extract_embeddings.run()
 
     # Train model
-    command = "python train_model.py --embeddings output/embeddings.pickle --recognizer output/recognizer.pickle --le output/le.pickle"
-    os.system(command)
+    train_model.run()
     mainMenu()
 
 
 def RecognizeFaces(class_id):
-    command = "python recognize.py --detector face_detection_model --embedding-model openface_nn4.small2.v1.t7 --recognizer output/recognizer.pickle --le output/le.pickle --class_id " + class_id
+    command = "python recognize.py --class_id " + class_id
     os.system(command)
+    mainMenu()
+
+
+def RecognizeUI():
+    recognize_ui.run()
     mainMenu()
 
 

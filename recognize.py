@@ -11,25 +11,21 @@ from datetime import datetime
 import pandas as pd
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-d", "--detector", required=True, help="path to OpenCV's deep learning face detector")
-ap.add_argument("-m", "--embedding-model", required=True, help="path to OpenCV's deep learning face embedding model")
-ap.add_argument("-r", "--recognizer", required=True, help="path to model trained to recognize faces")
-ap.add_argument("-l", "--le", required=True, help="path to label encoder")
 ap.add_argument("-c", "--confidence", type=float, default=0.8, help="minimum probability to filter weak detections")
 ap.add_argument("-i", "--class_id", required=True, help="determine which class need to check in")
 args = vars(ap.parse_args())
 
 print("[LOG] Loading Face Detector")
-protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
-modelPath = os.path.sep.join([args["detector"], "res10_300x300_ssd_iter_140000.caffemodel"])
+protoPath = os.path.sep.join(["face_detection_model", "deploy.prototxt"])
+modelPath = os.path.sep.join(["face_detection_model", "res10_300x300_ssd_iter_140000.caffemodel"])
 detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 
 print("[LOG] Loading Face Embedding Model")
-embedder = cv2.dnn.readNetFromTorch(args["embedding_model"])
+embedder = cv2.dnn.readNetFromTorch("openface_nn4.small2.v1.t7")
 
 # Load the face recognition model with the label encoder
-recognizer = pickle.loads(open(args["recognizer"], "rb").read())
-le = pickle.loads(open(args["le"], "rb").read())
+recognizer = pickle.loads(open("output/recognizer.pickle", "rb").read())
+le = pickle.loads(open("output/le.pickle", "rb").read())
 
 col_names = ['Student_Id', 'Subject_Id', 'Date_Time']
 attendance = pd.DataFrame(columns=col_names)
