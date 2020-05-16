@@ -2,3 +2,5 @@ dataSet/
 .idea/
 output/
 attendance/
+attendanceFaceLog/
+venv/

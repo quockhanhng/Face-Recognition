@@ -1,19 +1,20 @@
-import time
 import tkinter
 import tkinter.scrolledtext as tkst
-
+import cv2
 import PIL.Image
 import PIL.ImageTk
-import cv2
-from imutils.video import VideoStream
-import mysql.connector
-import numpy as np
-import argparse
 import imutils
-import pickle
-import os
+from imutils import paths
+from imutils.video import VideoStream
+import time
 from datetime import datetime
+import os
+import pickle
+import numpy as np
 import pandas as pd
+import mysql.connector
+
+import send_mail
 
 
 class App:
@@ -79,6 +80,8 @@ class App:
         self.m2.add(self.btn_stop)
 
         self.checked_students = {}
+        self.checked_student_count = {}
+        self.photo_change_student = {}
 
         # After it is called once, the update method will be automatically called every delay milliseconds
         self.delay = 15
@@ -121,6 +124,7 @@ class App:
     def onStop(self):
         if self.is_recognize:
             self.is_recognize = False
+            self.checked_student_count = {}
 
             self.log_text.insert(tkinter.INSERT, "[LOG] Finished check-in\n")
 
@@ -147,11 +151,30 @@ class App:
             self.attendance.to_csv(fileName, index=False)
             self.log_text.insert(tkinter.INSERT, "[LOG] Wrote log for this lesson to file successful\n")
 
-            # Send warning mail to absent students
+            # Update student's data set
+            for code in self.photo_change_student:
+                imagePaths = list(paths.list_images("dataSet/{}".format(code)))
+                for (i, _) in enumerate(imagePaths):
+                    imagePath = "dataSet/{}/{}_{}.jpg".format(code, code, i + 1)
+                    newImagePath = "dataSet/{}/{}_{}.jpg".format(code, code, i)
+                    # num = imagePath.split(os.path.sep)[-1].split("_")[1]
+
+                    os.rename(r'{}'.format(imagePath), r'{}'.format(newImagePath))
+                newImage = "dataSet/{}/{}_{}.jpg".format(code, code, len(imagePaths))
+                cv2.imwrite(newImage, self.photo_change_student[code])
+                removeImage = "dataSet/{}/{}_0.jpg".format(code, code)
+                os.remove(removeImage)
+
+            # # Send warning mail to absent students
             # for student_code in self.student_check_in_list:
             #     if not self.student_check_in_list[student_code]:
-            #         sendMailWithAttachment(getEmailFromStudentId(student_code),
-            #                                "Bạn đã vắng mặt ở tiết học {}".format(self.subject_code), fileName)
+            #         sendMail(getEmailFromId(student_code),
+            #                  "Bạn đã vắng mặt ở tiết học {}".format(self.subject_code))
+            #
+            # # Send report to lecturer
+            # lecturer_list = getLecturersFromClass(self.subject_code)
+            # for lecturer_code in lecturer_list:
+            #     sendMailWithAttachment(getEmailFromId(lecturer_code), "Attendance Report", fileName)
 
         else:
             self.log_text.insert(tkinter.INSERT, "[LOG] The attendance system is not start yet\n")
@@ -206,6 +229,7 @@ class App:
 
         if ret:
             # Grab the image dimensions
+            savedFrame = frame
             (h, w) = frame.shape[:2]
 
             # Construct a blob from the image
@@ -242,11 +266,15 @@ class App:
                     j = np.argmax(preds)
                     proba = preds[j]
                     student_code = le.classes_[j]
-
+                    if student_code in self.checked_student_count:
+                        self.checked_student_count['{}'.format(student_code)] += 1
+                    else:
+                        self.checked_student_count['{}'.format(student_code)] = 1
+                    print(student_code + " " + str(proba))
                     # Check if student is in class
-                    # text = "{}: {:.2f}%".format(student_code, proba * 100)
                     text = "Not in this class"
-                    if student_code in self.student_list and proba > 0.65:
+                    if student_code in self.student_list and proba > 0.5 \
+                            and self.checked_student_count['{}'.format(student_code)] > 5:
                         text = "{}: {:.2f}%".format(student_code, proba * 100)
                         if not self.student_check_in_list[student_code]:
                             self.student_check_in_list[student_code] = True
@@ -257,6 +285,18 @@ class App:
                             # Add student to checked list
                             self.checked_students['{}'.format(student_code)] = current_time
                             self.checkboxes_list[student_code].var.set(1)
+
+                            # Write face log to local storage
+                            check_in_time = current_time.split(" ")[1].split(":")
+                            dataPath = "attendanceFaceLog/" + self.entry_class_code.get() \
+                                       + "/" + current_time.split(" ")[0]
+                            if not os.path.isdir(dataPath):
+                                os.makedirs(dataPath)
+                            cv2.imwrite(dataPath + "/" + student_code + "_" + current_time.split(" ")[0] + "_" +
+                                        check_in_time[0] + "-" + check_in_time[1] + "-" + check_in_time[2] + ".jpg",
+                                        savedFrame)
+
+                            self.photo_change_student['{}'.format(student_code)] = savedFrame
 
                             log_text = "Check in student {} successful".format(student_code)
                             self.lb_student_code['text'] = log_text
@@ -286,6 +326,7 @@ class App:
     def upon_select(self, widget):
         if widget.var.get() == 0:  # Lecturer uncheck student
             self.student_check_in_list[widget['text']] = False
+            self.checked_student_count['{}'.format(widget['text'])] = 0
             log_text = "Unchecked student {}".format(widget['text'])
             self.lb_student_code['text'] = log_text
             self.lb_student_code.config(background='#BB0A1E', height=3)
@@ -428,6 +469,30 @@ def getStudentsFromClass(class_id):
     return my_result
 
 
+def getLecturersFromClass(class_id):
+    my_db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="ThisIsPassword",
+        database="face_recognition"
+    )
+    my_cursor = my_db.cursor()
+    query = """
+            SELECT DISTINCT u.code
+            FROM users as u
+            INNER JOIN user_subject as us
+            ON u.id = us.user_id 
+            INNER JOIN subjects as s
+            ON us.subject_id = s.id WHERE s.code = '{}'
+            AND u.role = 1""".format(class_id)
+
+    my_cursor.execute(query)
+    my_result = [item[0] for item in my_cursor.fetchall()]
+    my_cursor.close()
+
+    return my_result
+
+
 def checkInStudent(s_id, c_id, attendance_time):
     my_db = mysql.connector.connect(
         host="localhost",
@@ -485,7 +550,7 @@ def getSubjectIdFromCode(code):
     return my_result
 
 
-def getEmailFromStudentId(code):
+def getEmailFromId(code):
     my_db = mysql.connector.connect(
         host="localhost",
         user="root",
@@ -506,14 +571,16 @@ def getEmailFromStudentId(code):
 
 
 def sendMail(receiver, body):
-    command = "python send_mail.py --receive \"{}\" --body \"{}\"".format(receiver, body)
-    os.system(command)
+    send_mail.runWithoutAttachment(receiver, body)
 
 
 def sendMailWithAttachment(receiver, body, file):
-    command = "python send_mail.py --receive \"{}\" --body \"{}\" --file \"{}\"".format(receiver, body, file)
-    os.system(command)
+    send_mail.runWithAttachment(receiver, body, file)
 
 
 # Create a window and pass it to the Application object
-App(tkinter.Tk(), "Student Attendance System")
+def run():
+    App(tkinter.Tk(), "Student Attendance System")
+
+
+run()
